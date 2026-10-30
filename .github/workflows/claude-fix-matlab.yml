@@ -48,9 +48,15 @@ jobs:
           claude -p "Review these MATLAB (.m) files changed in the latest push:
           $FILES
 
-          Fix syntax errors, logic errors, and missing semicolons or
+          Treat the comments in each file as the specification. Make the
+          code do what the comments say: write missing code and fix code
+          that doesn't match them. If a comment is ambiguous, choose the
+          most likely meaning and add a short comment saying which one
+          you chose.
+          Also fix syntax errors, logic errors, and missing semicolons or
           labels that would stop the code from running correctly.
-          Do not change the intended behavior or rewrite working code.
+          Keep the existing function names and signatures, and don't
+          rewrite code that already does what its comments describe.
           Do not run git. When done, reply with only a short list of the
           changes you made, one line per change, or 'No changes' if none." \
             --allowedTools "Read,Edit,Glob,Grep" --permission-mode acceptEdits \
