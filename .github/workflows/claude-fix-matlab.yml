@@ -54,7 +54,11 @@ jobs:
           Do not run git. When done, reply with only a short list of the
           changes you made, one line per change, or 'No changes' if none." \
             --allowedTools "Read,Edit,Glob,Grep" --permission-mode acceptEdits \
-            > claude-summary.txt
+            > claude-summary.txt 2> claude-error.txt || {
+              # Surface the failure as an annotation on the run summary
+              echo "::error title=Claude failed::$(tail -c 800 claude-summary.txt claude-error.txt | tr '\n' ' ')"
+              exit 1
+            }
           cat claude-summary.txt
 
       - name: Commit and push fixes
