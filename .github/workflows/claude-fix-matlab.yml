@@ -45,11 +45,6 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           FILES: ${{ steps.changed.outputs.files }}
         run: |
-          # Check the key's shape without printing it
-          key_info="length ${#ANTHROPIC_API_KEY}"
-          [[ "$ANTHROPIC_API_KEY" =~ [[:space:]] ]] && key_info="$key_info, contains whitespace"
-          [[ "$ANTHROPIC_API_KEY" == sk-ant-api* ]] || key_info="$key_info, wrong prefix"
-          echo "::notice title=API key::$key_info"
           claude -p "Review these MATLAB (.m) files changed in the latest push:
           $FILES
 
