@@ -18,13 +18,53 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: anthropics/claude-code-action@v1
-        with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          prompt: |
-            Review the MATLAB (.m) files changed in the latest push.
-            Fix syntax errors, logic errors, and missing semicolons or
-            labels that would stop the code from running correctly.
-            Do not change the intended behavior or rewrite working code.
-            Commit your fixes to main with a short message describing each
-            change. Push them.
+      # claude-code-action doesn't support push events, so run the CLI directly
+      - name: Find changed MATLAB files
+        id: changed
+        run: |
+          before="${{ github.event.before }}"
+          if git cat-file -e "$before^{commit}" 2>/dev/null; then
+            files=$(git diff --name-only --diff-filter=AM "$before" "$GITHUB_SHA" -- '*.m')
+          else
+            files=$(git ls-files '*.m')
+          fi
+          echo "$files"
+          {
+            echo 'files<<EOF'
+            echo "$files"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Install Claude Code
+        if: steps.changed.outputs.files != ''
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Let Claude fix the files
+        if: steps.changed.outputs.files != ''
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          FILES: ${{ steps.changed.outputs.files }}
+        run: |
+          claude -p "Review these MATLAB (.m) files changed in the latest push:
+          $FILES
+
+          Fix syntax errors, logic errors, and missing semicolons or
+          labels that would stop the code from running correctly.
+          Do not change the intended behavior or rewrite working code.
+          Do not run git. When done, reply with only a short list of the
+          changes you made, one line per change, or 'No changes' if none." \
+            --allowedTools "Read,Edit,Glob,Grep" --permission-mode acceptEdits \
+            > claude-summary.txt
+          cat claude-summary.txt
+
+      - name: Commit and push fixes
+        if: steps.changed.outputs.files != ''
+        run: |
+          if git diff --quiet; then
+            echo "No fixes needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Claude: fix MATLAB files" -m "$(cat claude-summary.txt)"
+          git push
