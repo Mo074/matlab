@@ -1,5 +1,5 @@
 function b=prob5(a)
-%calculating the mean of a
+%calculating the mean of a without a loop
 
 N=length(a);
 s=0;
