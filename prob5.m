@@ -1,5 +1,5 @@
 function b=prob5(a)
-%what should I expect from thao's exam
+%what should I expect from thao's exam in terms of questions
 
 end
 
