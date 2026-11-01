@@ -55,6 +55,8 @@ jobs:
           you chose.
           Also fix syntax errors, logic errors, and missing semicolons or
           labels that would stop the code from running correctly.
+          Write all code in the course style described in CLAUDE.md,
+          using only syntax and functions it lists as taught.
           Keep the existing function names and signatures, and don't
           rewrite code that already does what its comments describe.
           Do not run git. When done, reply with only a short list of the
