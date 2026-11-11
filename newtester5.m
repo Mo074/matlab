@@ -1,7 +1,6 @@
 function newtester5(a)
-%make a 8x5 matrix with zeroes
+%how old was hitler when he got rejected frp, art shcool output that in b
 
-% chosen meaning: 8 rows, 5 columns; no output argument, so it is printed
 B=[0 0 0 0 0; 0 0 0 0 0; 0 0 0 0 0; 0 0 0 0 0; 0 0 0 0 0; 0 0 0 0 0; 0 0 0 0 0; 0 0 0 0 0]
 
 end
