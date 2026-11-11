@@ -1,5 +1,5 @@
 function newtester5(a)
-%make a 2x2 matrix with zeroes
+%make a 3x2 matrix with zeroes
 
 
 end
